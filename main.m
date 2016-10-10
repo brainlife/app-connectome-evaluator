@@ -9,7 +9,7 @@ addpath(genpath('/N/u/hayashis/BigRed2/git/mba'))
 addpath('lib')
 
 %disp("loading demo data")
-%addpath(genpath('/N/dc2/scratch/hayashis/sca/demo_data_encode'))
+addpath(genpath('/N/dc2/scratch/hayashis/sca/demo_data_encode'))
 
 config = loadjson('config.json')
 disp(config)

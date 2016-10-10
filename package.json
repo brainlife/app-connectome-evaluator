@@ -2,7 +2,6 @@
   "name": "sca-service-connectome-data-comparison",
   "version": "1.0.0",
   "description": "connectome-data-comparison from https://github.com/brain-life/encode",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "start.sh",
