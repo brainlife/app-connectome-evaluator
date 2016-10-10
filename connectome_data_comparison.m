@@ -1,4 +1,4 @@
-function [fh, fe] = connectome_data_comparison()
+function [fh, fe] = connectome_data_comparison(config)
 % This demo characterizes connectomes obtained with different data sets and
 % tracking methods. 
 % 
@@ -62,9 +62,9 @@ Generate_Fig3_paper_Caiafa_Pestilli('gray')
 % We load data not yet present on the plot.
 %
 disp('loading fe_structures for 105115 subject in HCP3T dataset (PROB) ...')
-feFileName = fullfile(feDemoDataPath('HCP3T','sub-105115','fe_structures'), ...
-             'fe_structure_105115_STC_run01_SD_PROB_lmax10_connNUM01.mat');
-load(feFileName)
+%feFileName = fullfile(feDemoDataPath('HCP3T','sub-105115','fe_structures'), ...
+%             'fe_structure_105115_STC_run01_SD_PROB_lmax10_connNUM01.mat');
+load(config.input_fe)
 
 % Here we extract two measures we are interested in:
 % (1) The root-mean-squared-error RMSE of the connectome in predicting 
