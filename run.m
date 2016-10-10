@@ -1,8 +1,11 @@
 
 disp('loading application paths')
+
+%TODO - move this to more permanent location - probably even /N/soft?
 addpath(genpath('/N/u/hayashis/BigRed2/git/encode'))
 addpath(genpath('/N/u/hayashis/BigRed2/git/vistasoft'))
 addpath(genpath('/N/u/hayashis/BigRed2/git/mba'))
+
 addpath('lib')
 
 %disp("loading demo data")
