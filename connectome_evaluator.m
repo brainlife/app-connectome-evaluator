@@ -58,7 +58,16 @@ Generate_Fig3_paper_Caiafa_Pestilli('gray')
 % We load the FE structure from the file path stored locally on the SCA
 % configuration file.
 %
-load(config.input_fe)
+if isempty(varargin)
+   config = loadjson('config.json');
+else
+    error('[%s] Cannot find SCA configuration file locally \n PWD: %s \n No file passed as input either.',mfilename, pwd)
+end
+
+% If we were about to read from disk the path to the input FE strcutre we
+% should now be abel to load it.
+disp('Loading FE strcutre from sca cnfig file...')
+load(config.input_fe);
 
 % We use the core function feGet.m to extract the RMSE and the B0 (MRI
 % measureemnts without the diffusion-weighted gradient applied).
@@ -74,7 +83,7 @@ output_sbj.nnz = feGet(fe,'connectome density');
 % Finally we add the new data point to the plot we have generted. This si
 % doen by plotting connectome density on the ordinate and RMSE on the
 % abscissa.
-fh = Add_new_data_point(output_sbj,'cold',2)
+fh = Add_new_data_point(output_sbj,'cold',2);
 
 % Write figure to disk.
 fig_file_name = feSavefig(h,)
