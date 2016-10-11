@@ -1,14 +1,17 @@
 function main
-%
-%
-%
-disp('loading application paths')
 
+if isempty(getenv('SCA_SERVICE_DIR'))
+    disp('setting SCA_SERVICE_DIR to pwd')
+    setenv('SCA_SERVICE_DIR', pwd)
+end
+
+disp('loading application paths')
 % TODO - move this to more permanent location - probably even /N/soft?
 addpath(genpath('/N/u/hayashis/BigRed2/git/encode'))
 addpath(genpath('/N/u/hayashis/BigRed2/git/vistasoft'))
 addpath(genpath('/N/u/hayashis/BigRed2/git/mba'))
-addpath(genpath(fullfile(pwd,'lib')))
+addpath(genpath('/N/u/hayashis/BigRed2/git/jsonlab'))
+%addpath(genpath(getenv('SCA_SERVICE_DIR')))
 
 %disp("loading demo data")
 addpath(genpath('/N/dc2/scratch/hayashis/sca/demo_data_encode'))
