@@ -16,7 +16,7 @@ addpath(genpath('/N/dc2/scratch/hayashis/sca/demo_data_encode'))
 config = loadjson('config.json');
 disp(config)
 
-disp('running connectome_data_comparison')
+disp('Running connectome_evaluator...')
 connectome_evaluator(config)
 
 %all sca service needs to write products.json - empty for now

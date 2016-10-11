@@ -74,10 +74,10 @@ output_sbj.nnz = feGet(fe,'connectome density');
 % Finally we add the new data point to the plot we have generted. This si
 % doen by plotting connectome density on the ordinate and RMSE on the
 % abscissa.
-fh = Add_new_data_point(output_sbj,'cold',2)
+fh = Add_new_data_point(output_sbj,'cold',2);
 
 % Write figure to disk.
-fig_file_name = feSavefig(h,)
+%fig_file_name = feSavefig(h,)
 
 % Try to modify the jason file
 %
@@ -305,26 +305,26 @@ end
 
 end
 
-function [sbj] = retrieve_results(fe,alg,name)
-%
-% Extracts results from a precomputed FE strcuture.
-% These results compare
-%
-sbj.alg = alg;
-sbj.name = name;
-
-% We use the core function feGet.m to extract the RMSE and the B0 (MRI
-% measureemnts without the diffusion-weighted gradient applied).
+% function [sbj] = retrieve_results(fe,alg,name)
+% %
+% % Extracts results from a precomputed FE strcuture.
+% % These results compare
+% %
+% sbj.alg = alg;
+% sbj.name = name;
 % 
-% We compute the mean RMSE across the whole white matter volume.
-sbj.rmse = nanmean(feGet(fe,'voxrmses0norm'));
-
-% We find the positive weights and disregard the NaNs. THen compute the
-% number of postive weights (number of fascicles with non-zero weight, alse
-% referred to as conenctome density).
-sbj.nnz = feGet(fe,'connectome density'); 
-
-end
+% % We use the core function feGet.m to extract the RMSE and the B0 (MRI
+% % measureemnts without the diffusion-weighted gradient applied).
+% % 
+% % We compute the mean RMSE across the whole white matter volume.
+% sbj.rmse = nanmean(feGet(fe,'voxrmses0norm'));
+% 
+% % We find the positive weights and disregard the NaNs. THen compute the
+% % number of postive weights (number of fascicles with non-zero weight, alse
+% % referred to as conenctome density).
+% sbj.nnz = feGet(fe,'connectome density'); 
+% 
+% end
 
 
 function [] = Add_new_data_point(sbj,color_type,order)
@@ -334,7 +334,7 @@ function [] = Add_new_data_point(sbj,color_type,order)
 %
 c = getNiceColors(color_type);
 
-%% scatter plot
+% scatter plot
 a = 0.5;
 
 switch sbj.alg
