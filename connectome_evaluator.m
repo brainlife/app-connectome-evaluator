@@ -55,7 +55,9 @@ end
 % We brighten the symbols to use them as background.
 Generate_Fig3_paper_Caiafa_Pestilli('gray')
 
-
+% We load the FE structure from the file path stored locally on the SCA
+% configuration file.
+%
 load(config.input_fe)
 
 % We use the core function feGet.m to extract the RMSE and the B0 (MRI
@@ -80,9 +82,9 @@ fig_file_name = feSavefig(h,)
 % Try to modify the jason file
 %
 % all sca services need to write products.json - empty for now
-product = {{'fig_1_filename',fig_file_name}};
-products{1} = product;
-savejson('', products, 'FileName', 'products.json')
+%product = {{'fig_1_filename',fig_file_name}};
+%products{1} = product;
+%savejson('', products, 'FileName', 'products.json')
 
 end
 
