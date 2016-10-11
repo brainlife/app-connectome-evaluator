@@ -15,7 +15,7 @@ config = loadjson('config.json')
 disp(config)
 
 disp('running connectome_data_comparison')
-connectome_data_comparison(config)
+connectome_evaluator(config)
 
 %all sca service needs to write products.json - empty for now
 products = []

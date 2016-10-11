@@ -2,5 +2,4 @@
 connectome-data-comparison from https://github.com/brain-life/encode
 
 # config.json
-
 Please see config.json as a sample
