@@ -55,18 +55,9 @@ end
 % We brighten the symbols to use them as background.
 Generate_Fig3_paper_Caiafa_Pestilli('gray')
 
-% We load the FE structure from the file path stored locally on the SCA
-% configuration file.
-%
-if isempty(varargin)
-   config = loadjson('config.json');
-else
-    error('[%s] Cannot find SCA configuration file locally \n PWD: %s \n No file passed as input either.',mfilename, pwd)
-end
-
 % If we were about to read from disk the path to the input FE strcutre we
 % should now be abel to load it.
-disp('Loading FE strcutre from sca cnfig file...')
+disp('Loading FE strcutre from sca config file...')
 load(config.input_fe);
 
 % We use the core function feGet.m to extract the RMSE and the B0 (MRI
@@ -78,6 +69,7 @@ output_sbj.rmse = nanmean(feGet(fe,'voxrmses0norm'));
 % We find the positive weights and disregard the NaNs. THen compute the
 % number of postive weights (number of fascicles with non-zero weight, alse
 % referred to as conenctome density).
+
 output_sbj.nnz = feGet(fe,'connectome density'); 
 
 % Finally we add the new data point to the plot we have generted. This si
@@ -86,7 +78,7 @@ output_sbj.nnz = feGet(fe,'connectome density');
 fh = Add_new_data_point(output_sbj,'cold',2);
 
 % Write figure to disk.
-fig_file_name = feSavefig(h,)
+%fig_file_name = feSavefig(h,)
 
 % Try to modify the jason file
 %
@@ -97,7 +89,32 @@ fig_file_name = feSavefig(h,)
 
 end
 
+%
 % Below is a series of local helper functions.
+%
+function [] = Add_new_data_point(sbj,color_type,order)
+%
+% This function adds a new data point precomputed into the scater plot that
+% compares connectome prediction error and resolution.
+%
+c = getNiceColors(color_type);
+
+%% scatter plot
+a = 0.5;
+
+switch sbj.alg
+    case 'PROB'
+        plot(sbj.rmse, sbj.nnz,'o','markerfacecolor',c(order,:),'markeredgecolor','k','linewidth',a,'markersize',14,'DisplayName',[sbj.name,' ',sbj.alg])
+    case 'DET'
+        plot(sbj.rmse, sbj.nnz,'s','markerfacecolor',c(order,:),'markeredgecolor','k','linewidth',a,'markersize',14,'DisplayName',[sbj.name,' ',sbj.alg])
+    case 'TENSOR'
+        plot(sbj.rmse, sbj.nnz,'d','markerfacecolor',c(order,:),'markeredgecolor','k','linewidth',a,'markersize',14,'DisplayName',[sbj.name,' ',sbj.alg])
+end
+
+drawnow
+
+end
+
 function [] = Generate_Fig3_paper_Caiafa_Pestilli(color_mode)
 %
 % Load data from the demo data repositroy and geenrate a plot similar to
@@ -332,30 +349,6 @@ sbj.rmse = nanmean(feGet(fe,'voxrmses0norm'));
 % number of postive weights (number of fascicles with non-zero weight, alse
 % referred to as conenctome density).
 sbj.nnz = feGet(fe,'connectome density'); 
-
-end
-
-
-function [] = Add_new_data_point(sbj,color_type,order)
-%
-% This function adds a new data point precomputed into the scater plot that
-% compares connectome prediction error and resolution.
-%
-c = getNiceColors(color_type);
-
-%% scatter plot
-a = 0.5;
-
-switch sbj.alg
-    case 'PROB'
-        plot(sbj.rmse, sbj.nnz,'o','markerfacecolor',c(order,:),'markeredgecolor','k','linewidth',a,'markersize',14,'DisplayName',[sbj.name,' ',sbj.alg])
-    case 'DET'
-        plot(sbj.rmse, sbj.nnz,'s','markerfacecolor',c(order,:),'markeredgecolor','k','linewidth',a,'markersize',14,'DisplayName',[sbj.name,' ',sbj.alg])
-    case 'TENSOR'
-        plot(sbj.rmse, sbj.nnz,'d','markerfacecolor',c(order,:),'markeredgecolor','k','linewidth',a,'markersize',14,'DisplayName',[sbj.name,' ',sbj.alg])
-end
-
-drawnow
 
 end
 
