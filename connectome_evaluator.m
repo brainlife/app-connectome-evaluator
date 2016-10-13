@@ -1,43 +1,6 @@
-function [fh, fe] = connectome_evaluator(config)
+function [fh, output_sbj] = connectome_evaluator(config)
 % This function does... 
 % 
-% It compares two fundamental properties of a connectome density and error
-% in predicting the diffusion signal. It shows how these conenctome
-% properties depend from data type (spatial resolution and directional
-% resolution) and tractogrpahy method (probabilistic, deterministic,
-% constrained spehreical deconvolution or tensor based).
-% 
-% Below, we load previously computed results and show the
-% relationship between the root-mean-squared error of a connectome in
-% predicting the demeaned diffusion-weighted signal and the number of
-% non-zero weighted connectome fascicles (connectome density).
-% 
-% The demo introduces uses of some fundamental operations provided by the
-% toolbox and accessed via feGet.m 
-%
-% feGet.m is a hub function that allows computing connectome error and
-% density among other operations.
-%
-% The plots geenrated by this demo reproduce partially results presented in
-% Figure 3 of "Multidimensional encoding of brain connectomes" by Cesar F.
-% Caiafa and Franco Pestilli, submitted (2016).
-%
-%  Copyright (2016), Franco Pestilli (Indiana Univ.) - Cesar F. Caiafa
-%  (CONICET) email: frakkopesto@gmail.com and ccaiafa@gmail.com
-
-%% (0) Check matlab, data dependencies and path settings.
-if ~exist('vistaRootPath.m','file');
-    disp('Vistasoft package either not installed or not on matlab path.')
-    error('Please, download it from https://github.com/vistalab/vistasoft');
-end
-if ~exist('feDemoDataPath.m','file');
-    disp('ERROR: demo dataset either not installed or not on matlab path.')
-    error('Please, download it from http://purl.dlib.indiana.edu/iusw/data/2022/20995/Demo_Data_for_Multidimensional_Encoding_of_Brain_Connectomes.tar.gz')
-end
-
-%% (1) Figure 3 from Multidimensional encoding of brain connectomes
-%      Cesar F. Caiafa and Franco Pestilli, submitted.
-%
 % Below we will first load part of the data used in Figure 3 of the
 % original publication (Caiafa and Pestilli, submitted)
 %
@@ -51,14 +14,28 @@ end
 % - the density of a connectome. More specifcially the number of fibers
 %   supported by the measured diffusion-weighted data in the provided
 %   tractography solution.
+%
+%  Copyright (2016), Franco Pestilli (Indiana Univ.) 
+
+%% (0) Check matlab, data dependencies and path settings.
+if ~exist('vistaRootPath.m','file');
+    disp('Vistasoft package either not installed or not on matlab path.')
+    error('Please, download it from https://github.com/vistalab/vistasoft');
+end
+if ~exist('feDemoDataPath.m','file');
+    disp('ERROR: demo dataset either not installed or not on matlab path.')
+    error('Please, download it from http://purl.dlib.indiana.edu/iusw/data/2022/20995/Demo_Data_for_Multidimensional_Encoding_of_Brain_Connectomes.tar.gz')
+end
+
+%% (1) Figure 3 from Multidimensional encoding of brain connectomes
 
 % We brighten the symbols to use them as background.
-Generate_Fig3_paper_Caiafa_Pestilli('gray')
+fh = Generate_Fig3_paper_Caiafa_Pestilli('gray');
 
 % We load the FE structure from the file path stored locally on the SCA
 % configuration file.
 %
-load(config.input_fe)
+load(config.input_fe);
 
 % We use the core function feGet.m to extract the RMSE and the B0 (MRI
 % measureemnts without the diffusion-weighted gradient applied).
@@ -74,22 +51,17 @@ output_sbj.nnz = feGet(fe,'connectome density');
 % Finally we add the new data point to the plot we have generted. This si
 % doen by plotting connectome density on the ordinate and RMSE on the
 % abscissa.
-fh = Add_new_data_point(output_sbj,'cold',2);
+plot(output_sbj.rmse, output_sbj.nnz,'o', ...
+     'markerfacecolor','r', ...
+     'markeredgecolor','k', ...
+     'linewidth',2,'markersize',18)
+drawnow
 
-% Write figure to disk.
-%fig_file_name = feSavefig(h,)
-
-% Try to modify the jason file
-%
-% all sca services need to write products.json - empty for now
-%product = {{'fig_1_filename',fig_file_name}};
-%products{1} = product;
-%savejson('', products, 'FileName', 'products.json')
 
 end
 
 % Below is a series of local helper functions.
-function [] = Generate_Fig3_paper_Caiafa_Pestilli(color_mode)
+function [fh] = Generate_Fig3_paper_Caiafa_Pestilli(color_mode)
 %
 % Load data from the demo data repositroy and geenrate a plot similar to
 % the one in Figure 3 of Caiafa and Pestilli under review.
@@ -131,7 +103,7 @@ function [] = Gen_plot(subject_set,color_type,DataPath,Nalg,dataset,color_mode)
 %
 % Generate a scatter plot similar to Caiafa and Pestilli Figure 3
 %
-nnz_all = zeros(length(subject_set),Nalg,10);
+nnz_all  = zeros(length(subject_set),Nalg,10);
 nnz_mean = zeros(length(subject_set),Nalg);
 nnz_std  = zeros(length(subject_set),Nalg);
 
@@ -305,50 +277,6 @@ end
 
 end
 
-% function [sbj] = retrieve_results(fe,alg,name)
-% %
-% % Extracts results from a precomputed FE strcuture.
-% % These results compare
-% %
-% sbj.alg = alg;
-% sbj.name = name;
-% 
-% % We use the core function feGet.m to extract the RMSE and the B0 (MRI
-% % measureemnts without the diffusion-weighted gradient applied).
-% % 
-% % We compute the mean RMSE across the whole white matter volume.
-% sbj.rmse = nanmean(feGet(fe,'voxrmses0norm'));
-% 
-% % We find the positive weights and disregard the NaNs. THen compute the
-% % number of postive weights (number of fascicles with non-zero weight, alse
-% % referred to as conenctome density).
-% sbj.nnz = feGet(fe,'connectome density'); 
-% 
-% end
-
-
-function [] = Add_new_data_point(sbj,color_type,order)
-%
-% This function adds a new data point precomputed into the scater plot that
-% compares connectome prediction error and resolution.
-%
-c = getNiceColors(color_type);
-
-% scatter plot
-a = 0.5;
-
-switch sbj.alg
-    case 'PROB'
-        plot(sbj.rmse, sbj.nnz,'o','markerfacecolor',c(order,:),'markeredgecolor','k','linewidth',a,'markersize',14,'DisplayName',[sbj.name,' ',sbj.alg])
-    case 'DET'
-        plot(sbj.rmse, sbj.nnz,'s','markerfacecolor',c(order,:),'markeredgecolor','k','linewidth',a,'markersize',14,'DisplayName',[sbj.name,' ',sbj.alg])
-    case 'TENSOR'
-        plot(sbj.rmse, sbj.nnz,'d','markerfacecolor',c(order,:),'markeredgecolor','k','linewidth',a,'markersize',14,'DisplayName',[sbj.name,' ',sbj.alg])
-end
-
-drawnow
-
-end
 
 
 
