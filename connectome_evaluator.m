@@ -55,7 +55,7 @@ output.nnz = feGet(fe,'connectome density');
 plot(output.rmse, output.nnz,'o', ...
      'markerfacecolor','r', ...
      'markeredgecolor','k', ...
-     'linewidth',2,'markersize',18)
+     'linewidth',2,'markersize',18);
 drawnow
 
 end
@@ -79,15 +79,15 @@ set(fh,'Position',[0,0,800,600]);
 Nalg = 13; % We plot a few data points (13 in total, 6 Prob + 6 Stream + Tensor)
 
 % plot HCP
-[rmse(1), nnz(1)] = Gen_plot(HCP_subject_set,'cold',DataPath,Nalg,'HCP3T90',color_mode)
+[rmse(1), nnz(1)] = Gen_plot(HCP_subject_set,'cold',DataPath,Nalg,'HCP3T90',color_mode);
 
 % plot STN
-[rmse(2), nnz(2)] = Gen_plot(STN_subject_set,'medium',DataPath,Nalg,'STN96',color_mode)
+[rmse(2), nnz(2)] = Gen_plot(STN_subject_set,'medium',DataPath,Nalg,'STN96',color_mode);
 
 Nalg = 9; % We plot a few data points (9 in total, 4 Prob + 4 Stream + Tensor)
 
 % plot HCP7T
-[rmse(3), nnz(3)] = Gen_plot(HCP7T_subject_set,'hot',DataPath,Nalg,'HCP7T60',color_mode)
+[rmse(3), nnz(3)] = Gen_plot(HCP7T_subject_set,'hot',DataPath,Nalg,'HCP7T60',color_mode);
 
 set(gca,'tickdir','out', 'ticklen',[0.025 0.025], ...
          'box','off','ytick',[2 9 16].*10^4, 'xtick', [0.04 0.07 0.1], ...
