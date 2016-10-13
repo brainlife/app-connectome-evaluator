@@ -15,7 +15,7 @@ function [fh, output] = connectome_evaluator(config)
 %   supported by the measured diffusion-weighted data in the provided
 %   tractography solution.
 %
-%  Copyright (2016), Franco Pestilli (Indiana Univ.) 
+%  Copyright (2016), Franco Pestilli Indiana University 
 
 %% (0) Check matlab, data dependencies and path settings.
 if ~exist('vistaRootPath.m','file');
