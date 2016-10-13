@@ -1,4 +1,4 @@
-function [fh, output_sbj] = connectome_evaluator(config)
+function [fh, output] = connectome_evaluator(config)
 % This function does... 
 % 
 % Below we will first load part of the data used in Figure 3 of the
@@ -30,7 +30,8 @@ end
 %% (1) Figure 3 from Multidimensional encoding of brain connectomes
 
 % We brighten the symbols to use them as background.
-fh = Generate_Fig3_paper_Caiafa_Pestilli('gray');
+[fh, reference.rmse, reference.nnz] = Generate_Fig3_paper_Caiafa_Pestilli('gray');
+output.reference = reference;
 
 % We load the FE structure from the file path stored locally on the SCA
 % configuration file.
@@ -41,27 +42,26 @@ load(config.input_fe);
 % measureemnts without the diffusion-weighted gradient applied).
 % 
 % We compute the mean RMSE across the whole white matter volume.
-output_sbj.rmse = nanmean(feGet(fe,'voxrmses0norm'));
+output.rmse = nanmean(feGet(fe,'voxrmses0norm'));
 
 % We find the positive weights and disregard the NaNs. THen compute the
 % number of postive weights (number of fascicles with non-zero weight, alse
 % referred to as conenctome density).
-output_sbj.nnz = feGet(fe,'connectome density'); 
+output.nnz = feGet(fe,'connectome density'); 
 
 % Finally we add the new data point to the plot we have generted. This si
 % doen by plotting connectome density on the ordinate and RMSE on the
 % abscissa.
-plot(output_sbj.rmse, output_sbj.nnz,'o', ...
+plot(output.rmse, output.nnz,'o', ...
      'markerfacecolor','r', ...
      'markeredgecolor','k', ...
      'linewidth',2,'markersize',18)
 drawnow
 
-
 end
 
 % Below is a series of local helper functions.
-function [fh] = Generate_Fig3_paper_Caiafa_Pestilli(color_mode)
+function [fh, rmse, nnz] = Generate_Fig3_paper_Caiafa_Pestilli(color_mode)
 %
 % Load data from the demo data repositroy and geenrate a plot similar to
 % the one in Figure 3 of Caiafa and Pestilli under review.
@@ -79,15 +79,15 @@ set(fh,'Position',[0,0,800,600]);
 Nalg = 13; % We plot a few data points (13 in total, 6 Prob + 6 Stream + Tensor)
 
 % plot HCP
-Gen_plot(HCP_subject_set,'cold',DataPath,Nalg,'HCP3T90',color_mode)
+[rmse(1), nnz(1)] = Gen_plot(HCP_subject_set,'cold',DataPath,Nalg,'HCP3T90',color_mode)
 
 % plot STN
-Gen_plot(STN_subject_set,'medium',DataPath,Nalg,'STN96',color_mode)
+[rmse(2), nnz(2)] = Gen_plot(STN_subject_set,'medium',DataPath,Nalg,'STN96',color_mode)
 
 Nalg = 9; % We plot a few data points (9 in total, 4 Prob + 4 Stream + Tensor)
 
 % plot HCP7T
-Gen_plot(HCP7T_subject_set,'hot',DataPath,Nalg,'HCP7T60',color_mode)
+[rmse(3), nnz(3)] = Gen_plot(HCP7T_subject_set,'hot',DataPath,Nalg,'HCP7T60',color_mode)
 
 set(gca,'tickdir','out', 'ticklen',[0.025 0.025], ...
          'box','off','ytick',[2 9 16].*10^4, 'xtick', [0.04 0.07 0.1], ...
@@ -99,13 +99,13 @@ drawnow
 
 end
 
-function [] = Gen_plot(subject_set,color_type,DataPath,Nalg,dataset,color_mode)
+function [rmse, nnz] = Gen_plot(subject_set,color_type,DataPath,Nalg,dataset,color_mode)
 %
 % Generate a scatter plot similar to Caiafa and Pestilli Figure 3
 %
 nnz_all  = zeros(length(subject_set),Nalg,10);
-nnz_mean = zeros(length(subject_set),Nalg);
-nnz_std  = zeros(length(subject_set),Nalg);
+nnz.mean = zeros(length(subject_set),Nalg);
+nnz.std  = zeros(length(subject_set),Nalg);
 
 alg_names = cell(1,Nalg);
 
@@ -146,12 +146,12 @@ for subject = subject_set;
     % Tensor
     for p=1:1
         rmse_all(n,m,:) = Result_alg(p).rmse;
-        rmse_mean(n,m)  = nanmean(Result_alg(p).rmse);
-        rmse_std(n,m)   = nanstd(Result_alg(p).rmse)./sqrt(length(Result_alg(p).rmse));
+        rmse.mean(n,m)  = nanmean(Result_alg(p).rmse);
+        rmse.std(n,m)   = nanstd(Result_alg(p).rmse)./sqrt(length(Result_alg(p).rmse));
         
         nnz_all(n,m,:) = Result_alg(p).nnz;
-        nnz_mean(n,m)  = nanmean(Result_alg(p).nnz);
-        nnz_std(n,m)   = nanstd(Result_alg(p).nnz)./sqrt(length(Result_alg(p).nnz));
+        nnz.mean(n,m)  = nanmean(Result_alg(p).nnz);
+        nnz.std(n,m)   = nanstd(Result_alg(p).nnz)./sqrt(length(Result_alg(p).nnz));
         
         alg_names{m} = char(alg_info(p).description);
         m = m +1;
@@ -160,12 +160,12 @@ for subject = subject_set;
     % Prob
     for p = range_prob  
         rmse_all(n,m,:) = Result_alg(p).rmse;
-        rmse_mean(n,m) = nanmean(Result_alg(p).rmse);
-        rmse_std(n,m)  = nanstd(Result_alg(p).rmse)./sqrt(length(Result_alg(p).rmse));       
+        rmse.mean(n,m) = nanmean(Result_alg(p).rmse);
+        rmse.std(n,m)  = nanstd(Result_alg(p).rmse)./sqrt(length(Result_alg(p).rmse));       
         
         nnz_all(n,m,:) = Result_alg(p).nnz;
-        nnz_mean(n,m)  = mean(Result_alg(p).nnz);
-        nnz_std(n,m)   = std(Result_alg(p).nnz)./sqrt(length(Result_alg(p).nnz));
+        nnz.mean(n,m)  = mean(Result_alg(p).nnz);
+        nnz.std(n,m)   = std(Result_alg(p).nnz)./sqrt(length(Result_alg(p).nnz));
         
         alg_names{m} = char(alg_info(p).description);
         m = m +1;
@@ -174,12 +174,12 @@ for subject = subject_set;
     % Det
     for p = range_det           
         rmse_all(n,m,:) = Result_alg(p).rmse;
-        rmse_mean(n,m) = nanmean(Result_alg(p).rmse);
-        rmse_std(n,m)  = nanstd(Result_alg(p).rmse)./sqrt(length(Result_alg(p).rmse));
+        rmse.mean(n,m) = nanmean(Result_alg(p).rmse);
+        rmse.std(n,m)  = nanstd(Result_alg(p).rmse)./sqrt(length(Result_alg(p).rmse));
         
         nnz_all(n,m,:) = Result_alg(p).nnz;
-        nnz_mean(n,m) = nanmean(Result_alg(p).nnz);
-        nnz_std(n,m)  = nanstd(Result_alg(p).nnz)./sqrt(length(Result_alg(p).nnz)); 
+        nnz.mean(n,m) = nanmean(Result_alg(p).nnz);
+        nnz.std(n,m)  = nanstd(Result_alg(p).nnz)./sqrt(length(Result_alg(p).nnz)); 
         
         alg_names{m} = char(alg_info(p).description);
         m = m +1;
@@ -204,12 +204,12 @@ for is  = 1:size(nnz_all,1)
     tmp_nnz(isinf(tmp_nnz)) = nan;
     
     % mu and sem RMSE
-    rmse_mu(is,:) = squeeze(nanmean(tmp_rmse,2));
-    rmse_ci(is,:) = [rmse_mu(is,:), rmse_mu(is,:)] + 5*([-nanstd(tmp_rmse,[],2),;nanstd(tmp_rmse,[],2)]' ./sqrt(size(tmp_rmse,2)));
+    rmse.mu(is,:) = squeeze(nanmean(tmp_rmse,2));
+    rmse.ci(is,:) = [rmse.mu(is,:), rmse.mu(is,:)] + 5*([-nanstd(tmp_rmse,[],2),;nanstd(tmp_rmse,[],2)]' ./sqrt(size(tmp_rmse,2)));
     
     % mu and sem NNZ
-    nnz_mu(is,:) = squeeze(nanmean(tmp_nnz,2));
-    nnz_ci(is,:) = [nnz_mu(is,:), nnz_mu(is,:)] + 5*([-nanstd(tmp_nnz,[],2);nanstd(tmp_nnz,[],2)]' ./sqrt(size(tmp_rmse,2)));
+    nnz.mu(is,:) = squeeze(nanmean(tmp_nnz,2));
+    nnz.ci(is,:) = [nnz.mu(is,:), nnz.mu(is,:)] + 5*([-nanstd(tmp_nnz,[],2);nanstd(tmp_nnz,[],2)]' ./sqrt(size(tmp_rmse,2)));
 end
 
 % scatter plot with confidence intervals first all in gray
@@ -219,22 +219,22 @@ for ii = 1:length(subject_set) % subjects
    hold on
    % PROB
    for iii = lmax_order
-       plot(rmse_mean(ii,prob_ix_low(iii)), nnz_mean(ii,prob_ix_low(iii)),'o','markerfacecolor',c(ii,:),'markeredgecolor',[.5,.5,.5],'linewidth',0.5,'markersize',14)
-       plot([rmse_ci(ii,prob_ix_low(iii)); rmse_ci(ii,prob_ix_high(iii))], [nnz_mu(ii,prob_ix_low(iii)); nnz_mu(ii,prob_ix_low(iii))],'-','color',[a a a],'linewidth',2)
-       plot([rmse_mu(ii,prob_ix_low(iii)); rmse_mu(ii,prob_ix_low(iii))], [nnz_ci(ii,[prob_ix_low(iii)]);  nnz_ci(ii,prob_ix_high(iii))],'-','color',[a a a],'linewidth',2)   
+       plot(rmse.mean(ii,prob_ix_low(iii)), nnz.mean(ii,prob_ix_low(iii)),'o','markerfacecolor',c(ii,:),'markeredgecolor',[.5,.5,.5],'linewidth',0.5,'markersize',14)
+       plot([rmse.ci(ii,prob_ix_low(iii)); rmse.ci(ii,prob_ix_high(iii))], [nnz.mu(ii,prob_ix_low(iii)); nnz.mu(ii,prob_ix_low(iii))],'-','color',[a a a],'linewidth',2)
+       plot([rmse.mu(ii,prob_ix_low(iii)); rmse.mu(ii,prob_ix_low(iii))], [nnz.ci(ii,[prob_ix_low(iii)]);  nnz.ci(ii,prob_ix_high(iii))],'-','color',[a a a],'linewidth',2)   
    end
    
    % DET
    for iii = lmax_order
-       plot(rmse_mean(ii,det_ix_low(iii)), nnz_mean(ii,det_ix_low(iii)),'s','markerfacecolor',c(ii,:),'markeredgecolor',[.5,.5,.5],'linewidth',0.5,'markersize',14)
-       plot([rmse_ci(ii,det_ix_low(iii)); rmse_ci(ii,[det_ix_high(iii)])], [nnz_mu(ii,det_ix_low(iii)); nnz_mu(ii,det_ix_low(iii))],'-','color',[a a a],'linewidth',2)
-       plot([rmse_mu(ii,det_ix_low(iii)); rmse_mu(ii,det_ix_low(iii));], [nnz_ci(ii,det_ix_low(iii)); nnz_ci(ii,[det_ix_high(iii)])],'-','color',[a a a],'linewidth',2)
+       plot(rmse.mean(ii,det_ix_low(iii)), nnz.mean(ii,det_ix_low(iii)),'s','markerfacecolor',c(ii,:),'markeredgecolor',[.5,.5,.5],'linewidth',0.5,'markersize',14)
+       plot([rmse.ci(ii,det_ix_low(iii)); rmse.ci(ii,[det_ix_high(iii)])], [nnz.mu(ii,det_ix_low(iii)); nnz.mu(ii,det_ix_low(iii))],'-','color',[a a a],'linewidth',2)
+       plot([rmse.mu(ii,det_ix_low(iii)); rmse.mu(ii,det_ix_low(iii));], [nnz.ci(ii,det_ix_low(iii)); nnz.ci(ii,[det_ix_high(iii)])],'-','color',[a a a],'linewidth',2)
    end
    
    % TENSOR
-   plot(rmse_mean(ii,ten_ix_low), nnz_mean(ii,ten_ix_low),'d','markerfacecolor',c(ii,:),'markeredgecolor',[.5,.5,.5],'linewidth',0.5,'markersize',14)
-   plot([rmse_ci(ii,ten_ix_low); rmse_ci(ii,ten_ix_high)], [nnz_mu(ii,ten_ix_low); nnz_mu(ii,ten_ix_low)],'-','color',[a a a],'linewidth',2)
-   plot([rmse_mu(ii,ten_ix_low); rmse_mu(ii,ten_ix_low)], [nnz_ci(ii,ten_ix_low); nnz_ci(ii,ten_ix_high)],'-','color',[a a a],'linewidth',2)
+   plot(rmse.mean(ii,ten_ix_low), nnz.mean(ii,ten_ix_low),'d','markerfacecolor',c(ii,:),'markeredgecolor',[.5,.5,.5],'linewidth',0.5,'markersize',14)
+   plot([rmse.ci(ii,ten_ix_low); rmse.ci(ii,ten_ix_high)], [nnz.mu(ii,ten_ix_low); nnz.mu(ii,ten_ix_low)],'-','color',[a a a],'linewidth',2)
+   plot([rmse.mu(ii,ten_ix_low); rmse.mu(ii,ten_ix_low)], [nnz.ci(ii,ten_ix_low); nnz.ci(ii,ten_ix_high)],'-','color',[a a a],'linewidth',2)
    
 end
 
