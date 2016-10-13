@@ -14,7 +14,7 @@ addpath(genpath('/N/u/hayashis/BigRed2/git/jsonlab'))
 %addpath(genpath(getenv('SCA_SERVICE_DIR')))
 
 %disp("loading demo data")
-addpath(genpath('/N/dc2/scratch/hayashis/sca/demo_data_encode'))
+addpath(genpath('/N/u/hayashis/Karst/testdata/demo_data_encode'))
 
 config = loadjson('config.json');
 disp(config)
