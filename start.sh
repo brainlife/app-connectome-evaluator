@@ -15,5 +15,6 @@ echo "starting main.m"
 (
 export MATLABPATH=$SCA_SERVICE_DIR
 nohup time matlab -nodisplay -r main > stdout.log 2> stderr.log
+echo "[]" > products.json 
 echo $? > finished
 ) &
