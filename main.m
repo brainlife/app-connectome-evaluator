@@ -26,4 +26,7 @@ savejson('w',    out.nnz,         'life_connectome_density.json');
 savejson('rmse', out.rmse,        'life_error.json');
 saveas(fh, 'figure1.png')
 
+% TODO - generate output
+savejson('',     {}, 'products.json');
+system('touch finished');
 
