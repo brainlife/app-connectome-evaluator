@@ -1,6 +1,3 @@
 {
-    "input_fe.real": "/N/u/hayashis/Karst/testdata/sca-service-connectome-data-comparison/output_fe.mat",
-    "input_fe.works": "/N/dc2/scratch/hayashis/sca/s7-workflows/57912b0fef01633d720918cf/582f02d96ed9c76da96bb5ea/output_fe.mat",
-    "input_fe.broken": "/N/dc2/scratch/hayashis/sca/s7-workflows/57912b0fef01633d720918cf/5850129fde50b11e60c2eae9/output_fe.mat",
-    "input_fe": "/N/dc2/scratch/hayashis/sca/s7-workflows/57912b0fef01633d720918cf/582f02d96ed9c76da96bb5ea/output_fe.mat"
+    "input_fe": "/N/u/hayashis/Karst/testdata/sca-service-connectome-data-comparison/output_fe.mat"
 }
