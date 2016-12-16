@@ -10,6 +10,8 @@ if [ -z "$SCA_PROGRESS_URL" ]; then
     export SCA_PROGRESS_URL="https://soichi7.ppa.iu.edu/api/progress/status/_sca.test"
 fi
 
+rm -f finished
+
 export MATLABPATH=$MATLABPATH:$SCA_SERVICE_DIR
 module load matlab
 #echo $MATLABPATH
