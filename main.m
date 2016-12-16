@@ -28,5 +28,5 @@ saveas(fh, 'figure1.png')
 
 % TODO - generate output
 savejson('',     {}, 'products.json');
-system('touch finished');
+system('echo 1 > finished');
 
