@@ -1,18 +1,25 @@
 function main
 
-if isempty(getenv('SCA_SERVICE_DIR'))
-    disp('setting SCA_SERVICE_DIR to pwd')
-    setenv('SCA_SERVICE_DIR', pwd)
-end
+%if exist('/N/u/hayashis/BigRed2/git', 'dir') == 7
+%if exist('/home/hayashis/git', 'dir') == 7
+switch getenv('ENV')
+case 'IUHPC'
+    disp('loading paths (HPC)')
+    addpath(genpath('/N/u/hayashis/BigRed2/git/encode-mexed'))
+    addpath(genpath('/N/u/hayashis/BigRed2/git/vistasoft'))
+    addpath(genpath('/N/u/hayashis/BigRed2/git/mba'))
+    addpath(genpath('/N/u/hayashis/BigRed2/git/jsonlab'))
 
-disp('loading application paths')
-% TODO - move this to more permanent location - probably even /N/soft?
-addpath(genpath('/N/u/hayashis/BigRed2/git/encode'))
-addpath(genpath('/N/u/hayashis/BigRed2/git/vistasoft'))
-addpath(genpath('/N/u/hayashis/BigRed2/git/mba'))
-addpath(genpath('/N/u/hayashis/BigRed2/git/jsonlab'))
-% addpath(genpath(getenv('SCA_SERVICE_DIR')))
-addpath(genpath('/N/u/hayashis/Karst/testdata/demo_data_encode'))
+    addpath(genpath('/N/u/hayashis/Karst/testdata/demo_data_encode'))
+case 'VM'
+    disp('loading paths (VM)')
+    addpath(genpath('/usr/local/encode-mexed'))
+    addpath(genpath('/usr/local/vistasoft'))
+    addpath(genpath('/usr/local/mba'))
+    addpath(genpath('/usr/local/jsonlab'))
+
+    addpath(genpath('/usr/local/demo_data_encode'))
+end
 
 config = loadjson('config.json');
 disp(config)
@@ -30,3 +37,4 @@ saveas(fh, 'figure1.png')
 savejson('',     {}, 'products.json');
 system('echo 0 > finished');
 
+end
