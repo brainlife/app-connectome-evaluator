@@ -1,21 +1,24 @@
 #!/bin/bash
 
-echo "running on " `hostname`
-
 #allows test execution
-if [ -z $SCA_SERVICE_DIR ]; then
-    export SCA_SERVICE_DIR=`pwd`
-fi
-if [ -z "$SCA_PROGRESS_URL" ]; then
-    export SCA_PROGRESS_URL="https://soichi7.ppa.iu.edu/api/progress/status/_sca.test"
-fi
+if [ -z $SERVICE_DIR ]; then export SERVICE_DIR=`pwd`; fi
+if [ -z $ENV ]; then export ENV=IUHPC; fi
 
 rm -f finished
-
-export MATLABPATH=$MATLABPATH:$SCA_SERVICE_DIR
 module load matlab
-#echo $MATLABPATH
 
-echo "now running matlab"
-nohup time matlab -nodisplay -r main > stdout.log 2> stderr.log &
+echo "starting main"
 
+(
+export MATLABPATH=$MATLABPATH:$SERVICE_DIR
+nohup time matlab -nodisplay -r main > stdout.log 2> stderr.log
+
+if [ -s out.json ];
+then
+	echo 0 > finished
+else
+	echo "out.json missing"
+	echo 1 > finished
+	exit 1
+fi
+) &
