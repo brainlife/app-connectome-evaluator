@@ -5,7 +5,10 @@ if [ -z $SERVICE_DIR ]; then export SERVICE_DIR=`pwd`; fi
 if [ -z $ENV ]; then export ENV=IUHPC; fi
 
 rm -f finished
-module load matlab
+
+if [ $ENV == "IUHPC" ]; then
+	module load matlab
+fi
 
 echo "starting main"
 
